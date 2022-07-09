@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TalkspaceNYTSampleApp</string>
+    <string name="article_multimedia_content_description">Multimedia image for article</string>
 </resources>
