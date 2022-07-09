@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -25,10 +26,15 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lovellup.talkspacenytsampleapp.R
 import com.lovellup.talkspacenytsampleapp.data.Article
+import androidx.compose.foundation.lazy.items
 
 @Composable
 fun ArticleList(articleList: List<Article>, onClick: (Article) -> Unit, onLongPress: (Article) -> Unit) {
-    ArticleListing(article = articleList.first(), onClick, onLongPress)
+    LazyColumn{
+        items(articleList) { article ->
+            ArticleListing(article = article, onClick = onClick, onLongPress = onLongPress)
+        }
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -38,8 +44,8 @@ fun ArticleListing(article: Article, onClick: (Article) -> Unit, onLongPress: (A
         Modifier
             .padding(8.dp)
             .combinedClickable(
-                onClick = {onClick(article)},
-                onLongClick = {onLongPress(article)}
+                onClick = { onClick(article) },
+                onLongClick = { onLongPress(article) }
             )
             .fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
