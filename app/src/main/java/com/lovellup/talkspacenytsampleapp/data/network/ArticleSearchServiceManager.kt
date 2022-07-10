@@ -6,32 +6,32 @@ class ArticleSearchServiceManager(
     private val service: ArticleSearchService,
     private val apiKey: String
 ) {
+    private val requiredArticlesQueryString = "news_desk:(\"Health\" \"Women's Health\" \"Men's Health\" \"Health & Fitness\")"
+
     suspend fun getRequiredArticles(): List<Article> {
-        return articleSearchResponseToArticles(
-            service.getArticlesForQueryString(
-                "news_desk:(\"Health\" \"Women's Health\" \"Men's Health\" \"Health & Fitness\")",
+        return service.getArticlesForQueryString(
+                requiredArticlesQueryString,
                 apiKey
-            )
-        )
+            ).toArticleList()
     }
 
-    private fun articleSearchResponseToArticles(articleSearchResponse: ArticleSearchResponse): List<Article> {
-        return articleSearchResponse.response?.docs?.map { docResponseToArticle(it) } ?: emptyList()
+    private fun ArticleSearchResponse.toArticleList(): List<Article> {
+        return this.response?.docs?.map { it.toArticle() } ?: emptyList()
     }
 
-    private fun docResponseToArticle(docResponse: Docs): Article {
-        val headline = docResponse.headline?.main ?: ""
-        val abstract = docResponse.abstract ?: ""
-        val url = docResponse.webUrl ?: ""
-        val multimediaUrl = if (docResponse.multimedia.isEmpty()) {
+    private fun Docs.toArticle(): Article {
+        val headline = this.headline?.main ?: ""
+        val abstract = this.abstract ?: ""
+        val url = this.webUrl ?: ""
+        val multimediaUrl = if (this.multimedia.isEmpty()) {
             ""
-        } else if (docResponse.multimedia.any { it.subtype?.equals("thumbnail") == true }) {
-            docResponse.multimedia.find { it.subtype == "thumbnail" }?.url ?: ""
+        } else if (this.multimedia.any { it.subtype == (Multimedia.preferredImageSubType) }) {
+            this.multimedia.find { it.subtype == Multimedia.preferredImageSubType }?.url ?: ""
         } else {
-            docResponse.multimedia.first().url
+            this.multimedia.first().url
         }
 
-        val fullMultimediaUrl = "https://static01.nyt.com/$multimediaUrl"
+        val fullMultimediaUrl = Multimedia.imageUrlPrepend + multimediaUrl
 
         return Article(
             headline = headline,

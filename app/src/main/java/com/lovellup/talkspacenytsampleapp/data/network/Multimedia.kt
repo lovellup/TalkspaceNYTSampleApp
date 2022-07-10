@@ -15,4 +15,9 @@ data class Multimedia(
     @Json(name = "legacy") var legacy: Legacy? = Legacy(),
     @Json(name = "subType") var subType: String? = null,
     @Json(name = "crop_name") var cropName: String? = null
-)
+) {
+    companion object {
+        const val preferredImageSubType = "thumbnail"
+        const val imageUrlPrepend = "https://static01.nyt.com/"
+    }
+}
